@@ -1,0 +1,41 @@
+import java.util.*;
+
+public class CustomEncryption {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter message: ");
+        String message = sc.nextLine();
+
+        System.out.print("Enter encryption key: ");
+        int key = sc.nextInt();
+
+        String encrypted = "";
+
+        // Encryption
+        for (int i = 0; i < message.length(); i++) {
+
+            char ch = message.charAt(i);
+
+            encrypted += (char)(ch ^ key);
+        }
+
+        System.out.println("Encrypted Message: " + encrypted);
+
+        String decrypted = "";
+
+        // Decryption
+        for (int i = 0; i < encrypted.length(); i++) {
+
+            char ch = encrypted.charAt(i);
+
+            decrypted += (char)(ch ^ key);
+        }
+
+        System.out.println("Decrypted Message: " + decrypted);
+
+        sc.close();
+    }
+}
