@@ -1,0 +1,45 @@
+public class DiffieHellmanMITM {
+
+    public static void main(String[] args) {
+
+        int p = 23;
+        int g = 5;
+
+        // Private keys
+        int alice = 6;
+        int bob = 15;
+
+        int eve1 = 7;
+        int eve2 = 10;
+
+        // Public keys
+        int A = (int)Math.pow(g, alice) % p;
+        int B = (int)Math.pow(g, bob) % p;
+
+        int E1 = (int)Math.pow(g, eve1) % p;
+        int E2 = (int)Math.pow(g, eve2) % p;
+
+        // Normal Diffie-Hellman
+        int keyAlice = (int)Math.pow(B, alice) % p;
+        int keyBob = (int)Math.pow(A, bob) % p;
+
+        System.out.println("Normal Diffie-Hellman:");
+        System.out.println("Alice's Key: " + keyAlice);
+        System.out.println("Bob's Key: " + keyBob);
+
+        // MITM Attack
+        int aliceEve = (int)Math.pow(E2, alice) % p;
+        int bobEve = (int)Math.pow(E1, bob) % p;
+
+        System.out.println("\nMITM Attack:");
+        System.out.println("Alice's Secret Key with Eve: " + aliceEve);
+        System.out.println("Bob's Secret Key with Eve: " + bobEve);
+
+        // Eve calculates both keys
+        int eveAlice = (int)Math.pow(A, eve2) % p;
+        int eveBob = (int)Math.pow(B, eve1) % p;
+
+        System.out.println("Eve's Key with Alice: " + eveAlice);
+        System.out.println("Eve's Key with Bob: " + eveBob);
+    }
+}

@@ -1,0 +1,63 @@
+import java.nio.file.*;
+import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+
+public class SecureImage {
+
+    public static void main(String[] args) throws Exception {
+
+        // Read original image
+        byte[] image = Files.readAllBytes(Paths.get("image.jpg"));
+
+        // Generate AES key
+        KeyGenerator kg = KeyGenerator.getInstance("AES");
+        kg.init(128);
+        SecretKey aesKey = kg.generateKey();
+
+        // Generate HMAC key
+        KeyGenerator hkg = KeyGenerator.getInstance("HmacSHA256");
+        SecretKey hmacKey = hkg.generateKey();
+
+        // Generate HMAC of original image
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(hmacKey);
+        byte[] originalHmac = mac.doFinal(image);
+
+        // Encrypt image using AES-GCM
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+        byte[] iv = new byte[12];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(iv);
+
+        GCMParameterSpec spec = new GCMParameterSpec(128, iv);
+
+        cipher.init(Cipher.ENCRYPT_MODE, aesKey, spec);
+        byte[] encrypted = cipher.doFinal(image);
+
+        System.out.println("Image Encrypted!");
+
+        // Simulate sending encrypted image and HMAC
+        System.out.println("Image and HMAC Sent to Receiver!");
+
+        // Receiver decrypts image
+        cipher.init(Cipher.DECRYPT_MODE, aesKey, spec);
+        byte[] decrypted = cipher.doFinal(encrypted);
+
+        Files.write(Paths.get("received.jpg"), decrypted);
+
+        System.out.println("Image Decrypted!");
+
+        // Receiver generates HMAC
+        mac.init(hmacKey);
+        byte[] receivedHmac = mac.doFinal(decrypted);
+
+        // Compare HMAC values
+        if (MessageDigest.isEqual(originalHmac, receivedHmac)) {
+            System.out.println("Image Integrity Verified!");
+        } else {
+            System.out.println("Image Modified!");
+        }
+    }
+}
