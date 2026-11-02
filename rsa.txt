@@ -1,0 +1,71 @@
+import java.security.*;
+import javax.crypto.*;
+import java.util.*;
+
+public class RSAAnalysis {
+
+    public static void main(String[] args) throws Exception {
+
+        int[] keySizes = {1024, 2048, 3072};
+
+        String[] messages = {"Hello","Hello World","This is a longer RSA message"};
+
+        for (int size : keySizes) {
+
+            System.out.println("\nRSA Key Size: " + size + " bits");
+
+            // Generate RSA key pair
+            KeyPairGenerator kg = KeyPairGenerator.getInstance("RSA");
+            kg.initialize(size);
+
+            long start = System.nanoTime();
+
+            KeyPair kp = kg.generateKeyPair();
+
+            long end = System.nanoTime();
+
+            System.out.println("Key Generation Time: " + (end - start) / 1000000.0 + " ms");
+
+            PublicKey publicKey = kp.getPublic();
+            PrivateKey privateKey = kp.getPrivate();
+
+            for (String message : messages) {
+
+                byte[] data = message.getBytes();
+
+                Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+
+                // Encryption
+                cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+
+                start = System.nanoTime();
+
+                byte[] encrypted = cipher.doFinal(data);
+
+                end = System.nanoTime();
+
+                double encryptionTime = (end - start) / 1000000.0;
+
+                // Decryption
+                cipher.init(Cipher.DECRYPT_MODE, privateKey);
+
+                start = System.nanoTime();
+
+                byte[] decrypted = cipher.doFinal(encrypted);
+
+                end = System.nanoTime();
+
+                double decryptionTime = (end - start) / 1000000.0;
+
+                System.out.println("\nMessage: " + message);
+                System.out.println("Message Size: " + data.length + " bytes");
+
+                System.out.println("Encryption Time: " + encryptionTime + " ms");
+
+                System.out.println("Decryption Time: " + decryptionTime + " ms");
+
+                System.out.println("Decrypted Message: " + new String(decrypted));
+            }
+        }
+    }
+}
