@@ -16,7 +16,7 @@ public class SHA1 {
 
         //generate hash (160-bit)
         byte[] hash1 = md.digest(msg.getBytes());
-        String originalHash = bytesToHex(hash1);
+        String originalHash = bytesToHex(hash1); //40 hex chars
 
         System.out.println("Original SHA-1: " + originalHash);
 
