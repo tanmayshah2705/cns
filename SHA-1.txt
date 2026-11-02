@@ -14,7 +14,7 @@ public class SHA1 {
         // Create SHA-1 object
         MessageDigest md = MessageDigest.getInstance("SHA-1");
 
-        //generate hash
+        //generate hash (160-bit)
         byte[] hash1 = md.digest(msg.getBytes());
         String originalHash = bytesToHex(hash1);
 
