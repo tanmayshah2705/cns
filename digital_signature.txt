@@ -1,0 +1,61 @@
+import java.security.*;
+import java.util.*;
+
+public class DigitalSignature {
+
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc = new Scanner(System.in);
+
+        KeyPairGenerator kg = KeyPairGenerator.getInstance("DSA");
+        kg.initialize(2048);
+
+        KeyPair kp = kg.generateKeyPair();
+
+        PrivateKey privateKey = kp.getPrivate();
+        PublicKey publicKey = kp.getPublic();
+
+ 
+        System.out.print("Enter message: ");
+        String msg = sc.nextLine();
+
+        // Create digital signature
+        Signature sign = Signature.getInstance("SHA256withDSA");
+
+        sign.initSign(privateKey);
+        sign.update(msg.getBytes());
+
+        byte[] signature = sign.sign();
+
+        System.out.println("Digital Signature Generated!");
+
+        // Verify signature
+        sign.initVerify(publicKey);
+        sign.update(msg.getBytes());
+
+        boolean result = sign.verify(signature);
+
+        if (result){
+            System.out.println("Signature Verified Successfully!");
+        } 
+	else{
+            System.out.println("Invalid Signature!");
+        }
+
+        // Modify message
+        System.out.print("Enter modified message: ");
+        String modifiedMsg = sc.nextLine();
+
+        // Verify modified message
+        sign.initVerify(publicKey);
+        sign.update(modifiedMsg.getBytes());
+
+        boolean modifiedResult = sign.verify(signature);
+
+        if (modifiedResult) {
+            System.out.println("Signature Valid!");
+        } else {
+            System.out.println("Signature Invalid! Message Modified!");
+        }
+    }
+}
